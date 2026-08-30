@@ -120,6 +120,9 @@
 		</aside>
 </bx:output></bx:if><bx:output>
 	</div>
+	<footer class="site-credit">
+		Design lovingly inspired by <a href="https://pi.dev/" target="_blank" rel="noopener noreferrer">Pi</a>
+	</footer>
 </bx:output><bx:if condition="#variables.footerEnabled#"><bx:output>
 	<footer class="site-footer">
 		#encodeForHTML( variables.siteConfig.name )#

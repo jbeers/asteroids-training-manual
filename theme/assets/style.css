@@ -663,6 +663,25 @@ pre code {
 	color: var( --pi-muted );
 }
 
+.site-credit {
+	max-width: 1440px;
+	margin: 2rem auto 2.5rem;
+	padding: 1rem;
+	border-top: 1px solid var( --pi-border );
+	color: var( --pi-muted );
+	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	font-size: 0.7rem;
+	text-align: center;
+}
+
+.site-credit a {
+	color: var( --pi-muted );
+}
+
+.site-credit a:hover {
+	color: var( --pi-accent );
+}
+
 .site-footer {
 	max-width: 1440px;
 	margin: 0 auto 3rem;
