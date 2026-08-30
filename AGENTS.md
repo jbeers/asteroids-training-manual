@@ -7,7 +7,7 @@ The overall goal is to create a website that serves as a guide for writing an as
 ```
 asteroids-ml/
 │
-├── book/                   # Human mental model'
+├── docs/                   # Human mental model'
 │   ├── index.md            # Site home
 │   └── ...
 │

@@ -11,7 +11,7 @@ I was reasearching if I could finetune Qwen3.8 27B to play the classic arcade ga
 - Build a cli app to play Asteroids
 - Use it as a training harness to train dedicated small models
 - Use it to learn how to fine tune a LLM
-- Implement a (model factory a-la Poolside)[https://poolside.ai/blog/introducing-the-model-factory]
+- Implement a [model factory a-la Poolside](https://poolside.ai/blog/introducing-the-model-factory)
 
 As I started to work through my research I realized I was really just creating tutorials for myself and that others might enjoy following the process. So now I'm sharing this with others.
 
