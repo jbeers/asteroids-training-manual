@@ -1,0 +1,156 @@
+<bx:script>
+	function resolveAssetUrl( required string url ) {
+		return arguments.url.reFindNoCase( "^[a-z][a-z0-9+.-]*://" ) ? arguments.url : variables.basePath & arguments.url
+	}
+
+	function renderBrand() {
+		var logo = trim( variables.siteConfig.theme.logo ?: "" )
+		var name = encodeForHTML( variables.siteConfig.name )
+		if ( len( logo ) ) {
+			return '<img class="site-brand__logo" src="' & resolveAssetUrl( logo ) & '" alt=""><span class="site-brand__name">' & name & '</span>'
+		}
+		return '<span class="site-mark" aria-hidden="true">A</span><span class="site-brand__name">' & name & '</span>'
+	}
+
+	function renderNavList( required array nodes, boolean nested = false ) {
+		var html = '<ul class="docs-nav' & ( arguments.nested ? ' docs-nav--nested' : '' ) & '">'
+		for ( var node in arguments.nodes ) {
+			var url = node.url ?: ""
+			var children = node.children ?: []
+			var active = len( url ) && url == variables.page.urlPath
+			var current = active ? ' aria-current="page"' : ''
+			var label = ( len( node.iconHtml ?: "" ) ? node.iconHtml & " " : "" ) & encodeForHTML( node.title )
+
+			if ( len( url ) ) {
+				html &= '<li class="docs-nav__item"><a class="docs-nav__link' & ( active ? ' is-active' : '' ) & '" href="' & variables.basePath & url & '"' & current & '>' & label & '</a>'
+			} else {
+				html &= '<li class="docs-nav__item"><span class="docs-nav__heading">' & label & '</span>'
+			}
+
+			if ( children.len() ) {
+				html &= renderNavList( children, true )
+			}
+			html &= '</li>'
+		}
+		return html & '</ul>'
+	}
+
+	function topNavClass( required boolean active ) {
+		return "top-nav__link" & ( arguments.active ? " is-active" : "" )
+	}
+
+	function renderTopNav( required array nodes ) {
+		var html = ""
+		for ( var node in arguments.nodes ) {
+			var url = node.url ?: ""
+			if ( len( url ) && url != variables.page.urlPath ) {
+				html &= '<a class="top-nav__link" href="' & variables.basePath & url & '">' & encodeForHTML( node.title ) & '</a>'
+			}
+		}
+		return html
+	}
+
+	function renderExtraCss( required array urls ) {
+		var html = ""
+		for ( var url in arguments.urls ) {
+			html &= '<link rel="stylesheet" href="' & resolveAssetUrl( url ) & '">'
+		}
+		return html
+	}
+
+	function renderExtraJs( required array urls ) {
+		var html = ""
+		for ( var url in arguments.urls ) {
+			html &= '<script src="' & resolveAssetUrl( url ) & '" defer></script>'
+		}
+		return html
+	}
+
+	variables.searchEnabled = ( variables.siteConfig.search ?: false ) ? true : false
+	variables.searchProviderName = lCase( trim( variables.siteConfig.searchProvider.provider ?: "local" ) )
+	var pagePath = variables.page.urlPath.reReplace( "^/+", "" )
+	variables.homeActive = pagePath == "" || pagePath == "index.html"
+	variables.documentationActive = !variables.homeActive
+	variables.tocPosition = variables.siteConfig.theme.options.tocPosition ?: "sticky"
+	variables.footerEnabled = ( variables.siteConfig.footer ?: false ) ? true : false
+</bx:script>
+<bx:output><!doctype html>
+<html lang="#encodeForHTML( variables.currentLocale.len() ? variables.currentLocale : 'en' )#" data-theme="dark">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>#encodeForHTML( variables.page.title )# - #encodeForHTML( variables.siteConfig.name )#</title>
+	<meta name="description" content="#encodeForHTML( variables.page.description ?: variables.siteConfig.description ?: '' )#">
+	<script>
+		( function () {
+			var configured = "#encodeForJavaScript( variables.siteConfig.theme.options.colorMode ?: 'dark' )#";
+			var stored = localStorage.getItem( "asteroids-theme" );
+			var systemDark = window.matchMedia( "(prefers-color-scheme: dark)" ).matches;
+			var mode = stored === "light" || stored === "dark" ? stored : ( configured === "auto" ? ( systemDark ? "dark" : "light" ) : configured );
+			document.documentElement.setAttribute( "data-theme", mode === "light" ? "light" : "dark" );
+		} )();
+	</script>
+	<link rel="stylesheet" href="#variables.basePath#assets/vendor/highlight/github.min.css">
+	<link rel="stylesheet" href="#variables.basePath#assets/theme/style.css">
+	#renderExtraCss( variables.siteConfig.extraCss ?: [] )#
+</head>
+<body class="pi-site">
+	<header class="site-header">
+		<div class="site-header__inner">
+			<button class="mobile-nav-toggle" type="button" aria-controls="docs-sidebar" aria-label="Toggle navigation" onclick="document.getElementById('docs-sidebar').classList.toggle('docs-sidebar--open')">☰</button>
+			<a class="site-brand" href="#variables.basePath#">#renderBrand()#</a>
+			<nav class="top-nav" aria-label="Primary">
+				<a class="#topNavClass( variables.homeActive )#" href="#variables.basePath#">Home</a>
+				<a class="#topNavClass( variables.documentationActive )#" href="#variables.basePath#">Documentation</a>
+				#renderTopNav( variables.nav )#
+			</nav>
+			<button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle color theme">◐</button>
+		</div>
+	</header>
+	<div class="docs-layout">
+		<nav class="docs-sidebar" id="docs-sidebar" aria-label="Documentation">
+			<div class="docs-sidebar__title">Documentation</div>
+			#renderNavList( variables.nav )#
+		</nav>
+		<main class="docs-main">
+</bx:output><bx:if condition="#variables.searchEnabled#"><bx:output>
+			<div class="docs-tools">
+</bx:output><bx:include template="#variables.themeDir#/search.bxm"><bx:output>
+			</div>
+</bx:output></bx:if><bx:output>
+</bx:output><bx:include template="#variables.themeDir#/page.bxm"><bx:output>
+		</main>
+</bx:output><bx:if condition="#variables.tocPosition == 'sticky' and variables.page.toc.len() gt 0#"><bx:output>
+		<aside class="docs-toc-rail">
+			#renderToc( variables.page.toc )#
+		</aside>
+</bx:output></bx:if><bx:output>
+	</div>
+</bx:output><bx:if condition="#variables.footerEnabled#"><bx:output>
+	<footer class="site-footer">
+		#encodeForHTML( variables.siteConfig.name )#
+	</footer>
+</bx:output></bx:if><bx:output>
+	<script src="#variables.basePath#assets/vendor/highlight/highlight.min.js"></script>
+	<script src="#variables.basePath#assets/highlight-boxlang.js"></script>
+	<script>if ( window.hljs ) { hljs.highlightAll(); }</script>
+	<script src="#variables.basePath#assets/code-lines.js"></script>
+	<script src="#variables.basePath#assets/copy-code.js" defer></script>
+	<script src="#variables.basePath#assets/admonition-collapse.js" defer></script>
+	<script src="#variables.basePath#assets/tabs.js" defer></script>
+	<script>
+		( function () {
+			var root = document.documentElement;
+			var button = document.getElementById( "theme-toggle" );
+			if ( !button ) return;
+			button.addEventListener( "click", function () {
+				var next = root.getAttribute( "data-theme" ) === "dark" ? "light" : "dark";
+				root.setAttribute( "data-theme", next );
+				localStorage.setItem( "asteroids-theme", next );
+			} );
+		} )();
+	</script>
+	#renderExtraJs( variables.siteConfig.extraJs ?: [] )#
+</body>
+</html>
+</bx:output>

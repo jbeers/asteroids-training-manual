@@ -1,0 +1,84 @@
+<bx:script>
+	function renderBreadcrumbs( required array crumbs ) {
+		if ( arguments.crumbs.len() lte 1 ) {
+			return ""
+		}
+		var html = '<nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol>'
+		for ( var i = 1; i <= arguments.crumbs.len(); i++ ) {
+			var crumb = arguments.crumbs[ i ]
+			if ( i == arguments.crumbs.len() ) {
+				html &= '<li aria-current="page">' & encodeForHTML( crumb.title ) & '</li>'
+			} else {
+				html &= '<li><a href="' & variables.basePath & crumb.url & '">' & encodeForHTML( crumb.title ) & '</a></li>'
+			}
+		}
+		return html & '</ol></nav>'
+	}
+
+	function renderToc( required array toc, boolean inline = false ) {
+		var className = arguments.inline ? "docs-toc docs-toc--inline" : "docs-toc"
+		var html = '<nav class="' & className & '" aria-label="On this page"><div class="docs-toc__title">On this page</div><ul>'
+		for ( var item in arguments.toc ) {
+			html &= '<li class="docs-toc__item docs-toc__item--' & item.level & '"><a href="##' & item.id & '">' & encodeForHTML( item.text ) & '</a></li>'
+		}
+		return html & '</ul></nav>'
+	}
+
+	function renderTags( required array tags ) {
+		var html = '<div class="docs-tags">'
+		for ( var tag in arguments.tags ) {
+			html &= '<span>' & encodeForHTML( tag ) & '</span>'
+		}
+		return html & '</div>'
+	}
+
+	function escapeAttribute( required string value ) {
+		return arguments.value.replace( "&", "&amp;", "all" ).replace( '"', "&quot;", "all" ).replace( "<", "&lt;", "all" )
+	}
+
+	function renderPageMeta( required string editUrl, required string markdownUrl, required string lastUpdated ) {
+		var html = '<div class="docs-meta">'
+		if ( len( arguments.editUrl ) ) {
+			html &= '<a href="' & escapeAttribute( arguments.editUrl ) & '" target="_blank" rel="noopener noreferrer">Edit this page</a>'
+		}
+		if ( len( arguments.markdownUrl ) ) {
+			html &= '<a href="' & variables.basePath & escapeAttribute( arguments.markdownUrl ) & '" download>Download Markdown</a>'
+		}
+		if ( len( arguments.lastUpdated ) ) {
+			html &= '<span>Updated ' & encodeForHTML( dateTimeFormat( arguments.lastUpdated, "medium" ) ) & '</span>'
+		}
+		return html & '</div>'
+	}
+</bx:script>
+<bx:output><article class="docs-article">
+	<header class="docs-article__header">
+</bx:output><bx:if condition="#variables.page.breadcrumbs.len() gt 1#"><bx:output>
+		#renderBreadcrumbs( variables.page.breadcrumbs )#
+</bx:output></bx:if><bx:output>
+		<div class="docs-article__eyebrow">Asteroids Training Manual</div>
+		<h1 class="docs-article__title" id="page-title">#encodeForHTML( variables.page.title )#</h1>
+</bx:output><bx:if condition="#len( variables.page.summary )#"><bx:output>
+		<p class="docs-article__summary">#encodeForHTML( variables.page.summary )#</p>
+</bx:output></bx:if><bx:if condition="#variables.page.tags.len() gt 0#"><bx:output>
+		#renderTags( variables.page.tags )#
+</bx:output></bx:if><bx:output>
+	</header>
+</bx:output><bx:if condition="#variables.page.toc.len() gt 0 and variables.tocPosition == 'top'#"><bx:output>
+	#renderToc( variables.page.toc, true )#
+</bx:output></bx:if><bx:output>
+	<div class="docs-prose">
+		#variables.page.contentHtml#
+	</div>
+</bx:output><bx:if condition="#( len( variables.page.editUrl ) or len( variables.page.markdownUrl ) or len( variables.page.lastUpdated ) )#"><bx:output>
+	#renderPageMeta( variables.page.editUrl, variables.page.markdownUrl, variables.page.lastUpdated )#
+</bx:output></bx:if><bx:output>
+</article>
+</bx:output><bx:if condition="#( len( variables.page.prevPage.url ) or len( variables.page.nextPage.url ) )#"><bx:output>
+<nav class="docs-page-nav" aria-label="Page navigation">
+</bx:output><bx:if condition="#len( variables.page.prevPage.url )#"><bx:output>
+	<a href="#variables.basePath##variables.page.prevPage.url#">← #encodeForHTML( variables.page.prevPage.title )#</a>
+</bx:output></bx:if><bx:if condition="#len( variables.page.nextPage.url )#"><bx:output>
+	<a class="docs-page-nav__next" href="#variables.basePath##variables.page.nextPage.url#">#encodeForHTML( variables.page.nextPage.title )# →</a>
+</bx:output></bx:if><bx:output>
+</nav>
+</bx:output></bx:if>

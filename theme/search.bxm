@@ -1,0 +1,7 @@
+<bx:if condition="#variables.searchProviderName eq 'local'#"><bx:output><div class="docs-search">
+	<span class="docs-search__icon" aria-hidden="true">⌕</span>
+	<input type="search" id="bxsites-search-input" class="docs-search__input" placeholder="#encodeForHTML( variables.strings.searchPlaceholder )#" aria-label="#encodeForHTML( variables.strings.searchAriaLabel )#">
+	<kbd class="docs-search__shortcut" aria-hidden="true">Ctrl K</kbd>
+	<ul id="bxsites-search-results" class="bxsites-search-results"></ul>
+</div>
+</bx:output></bx:if>
