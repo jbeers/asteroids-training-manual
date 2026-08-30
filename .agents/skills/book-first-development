@@ -1,0 +1,344 @@
+---
+name: book-first-development
+description: Book-First Development is a software development paradigm designed to maximize human understanding of a software system while taking advantage of the growing capabilities of AI coding agents.
+---
+
+# What Is Book-First Development?
+
+Book-First Development is a software development paradigm designed to maximize human understanding of a software system while taking advantage of the growing capabilities of AI coding agents.
+
+Its central idea is that **implementation should be downstream of human understanding**.
+
+Rather than beginning with a feature request and immediately asking an agent to produce code, the developer first develops and records a clear mental model of the system. AI may assist throughout this process through dialogue, research, criticism, formalization, and review, but the human remains responsible for understanding what is being built and why.
+
+A Book-First project begins with an explanatory artifact: **the book**.
+
+```text
+Human understanding
+        │
+        ▼
+      BOOK
+        │
+        ▼
+      SPEC
+        │
+        ▼
+CONFORMANCE TESTS
+        │
+        ▼
+ IMPLEMENTATION
+```
+
+The general process is:
+
+1. The human researches the problem, explores ideas through dialogue, makes design decisions, and writes the project book.
+2. A formal software specification is derived from the book.
+3. A generic conformance test suite is derived from the specification.
+4. One or more implementations are produced according to the specification.
+5. Each implementation is evaluated against the conformance suite.
+
+Additional planning artifacts such as milestones, PRDs, architectural plans, task lists, and implementation issues may be derived from the specification when useful, but they are not fundamental parts of the Book-First contract. They exist to help construct a particular implementation rather than to define what the project itself is.
+
+## The Book
+
+The **book** is primarily an artifact for human understanding.
+
+It explains:
+
+* what the system is;
+* why it exists;
+* the concepts necessary to understand it;
+* important terminology;
+* expected behavior;
+* constraints and invariants;
+* important tradeoffs;
+* and the reasoning behind major design decisions.
+
+The act of writing the book is itself part of software development.
+
+Book-First Development assumes that human understanding is a scarce and valuable resource. Writing, discussion, research, and revision are therefore not preliminary work that happens before development begins. They are development.
+
+AI can participate heavily in this process by acting as a conversational partner, researcher, critic, and reviewer. However, the human should remain responsible for understanding and endorsing the ideas that become authoritative.
+
+## The Specification
+
+The **specification** is derived from the book.
+
+Where the book explains the system in a form optimized for human understanding, the specification converts that understanding into a more precise, normative contract.
+
+The specification answers:
+
+> What must be true of an implementation for it to qualify as an implementation of this project?
+
+A good specification describes externally meaningful behavior while avoiding unnecessary implementation details.
+
+For example, a Battleship specification might require that:
+
+* a player can create a valid board;
+* ships can be placed according to the rules;
+* players can attack coordinates;
+* attacks can result in hits or misses;
+* ships can be sunk;
+* the game can determine when a player has won;
+* and a minimum command-line interface exists through which the game can be played.
+
+The specification should not normally dictate whether an implementation uses classes, structs, functional programming, a particular data structure, or a particular internal architecture unless such a constraint is itself an intentional property of the project.
+
+The book owns the meaning of the system.
+
+The specification owns its normative contract.
+
+## Conformance Tests
+
+A generic **conformance test suite** is derived from the specification.
+
+Its purpose is to provide executable evidence that an implementation satisfies the minimum contract of the project.
+
+The conformance suite should, whenever practical, treat an implementation as a black box. This allows the same suite to evaluate implementations written in different languages, using different architectures, or targeting different platforms.
+
+However, passing the conformance suite does **not** mean that an implementation is complete in every possible sense, nor does the suite define the maximum capabilities an implementation may have.
+
+The conformance suite establishes a **minimum compatible implementation**.
+
+An implementation is encouraged to exceed that minimum.
+
+For example, suppose the Battleship specification requires a command-line interface because the CLI provides a portable way for the generic conformance suite to interact with the game.
+
+One implementation might provide only that CLI.
+
+Another might provide the required CLI while also including a graphical desktop interface.
+
+Another might expose the same game through a web application.
+
+Another might run on an embedded device with physical buttons and a small display.
+
+All of these may be valid implementations as long as they continue to satisfy the common specification and provide whatever minimum interface is required for conformance testing.
+
+The specification and tests therefore define a **floor, not a ceiling**.
+
+```text
+                  Additional capabilities
+                         ▲
+                         │
+             ┌───────────┼───────────┐
+             │           │           │
+            GUI         Web       Embedded
+             │           │           │
+             └───────────┼───────────┘
+                         │
+                IMPLEMENTATION
+                         │
+                ─────────────────
+                 Minimum contract
+                ─────────────────
+                         │
+              CONFORMANCE TESTS
+                         │
+                       SPEC
+```
+
+This distinction allows implementations to innovate without fragmenting the definition of the underlying project.
+
+## Independent Implementations
+
+An important property of Book-First Development is that no implementation defines the project.
+
+Ideally, the book, specification, and conformance suite should be sufficiently complete that an independent developer or coding agent can construct a new implementation without inspecting an existing one.
+
+Suppose a human writes a Book-First project describing Battleship.
+
+The book explains the game, its rules, important concepts, edge cases, constraints, and rationale.
+
+The specification formalizes the minimum contract.
+
+The conformance suite provides a language-independent means of evaluating implementations.
+
+A coding agent could then be given those artifacts along with additional constraints such as:
+
+> Implement this project in Rust as a native command-line application.
+
+Another agent might receive:
+
+> Implement this project in TypeScript and provide a browser-based graphical interface in addition to the required compatibility interface.
+
+A third might receive:
+
+> Implement this project for an embedded device with severe memory constraints.
+
+These implementations may differ dramatically internally and may provide very different capabilities, yet all can remain implementations of the same underlying project.
+
+This provides an important test of the quality of the Book-First artifacts:
+
+> If the intended minimum behavior of the project cannot be reconstructed without examining an existing implementation, then important knowledge is still trapped inside the code.
+
+## Reference Implementations
+
+Although implementations should be independently replaceable, a Book-First project may include a **reference implementation**.
+
+A reference implementation is useful for:
+
+* experimentation;
+* demonstrations;
+* regression testing;
+* examples;
+* prototyping;
+* and ordinary in-place agentic development.
+
+It allows a developer to evolve the project book and specification while also maintaining a working implementation alongside them.
+
+However, the reference implementation is not itself authoritative.
+
+If the reference implementation conflicts with the published specification, the conflict must be resolved deliberately. Accidental implementation behavior should not silently become part of the project contract.
+
+Likewise, features present only in the reference implementation do not automatically become requirements for every other implementation.
+
+The reference implementation may exceed the minimum specification just like any other implementation.
+
+## Planning and Roadmaps
+
+A roadmap is useful, but it is not necessarily a fundamental artifact of Book-First Development.
+
+The specification describes a desired state of the system. A roadmap describes a possible sequence of intermediate states used to reach it.
+
+For example, a Battleship project might be implemented through milestones such as:
+
+```text
+Milestone 1
+- board representation
+- ship placement
+
+Milestone 2
+- attacks
+- hits and misses
+
+Milestone 3
+- sinking
+- victory conditions
+
+Milestone 4
+- required CLI interface
+```
+
+These can be thought of as **milestone specifications**: increasingly complete subsets of the final project contract.
+
+Different implementations may choose different paths.
+
+A Rust implementation, browser implementation, and embedded implementation may require different roadmaps even though they all target the same final specification.
+
+Implementation-specific planning artifacts therefore belong downstream of the shared project contract:
+
+```text
+                    BOOK
+                      │
+                      ▼
+                    SPEC
+                ┌─────┴─────┐
+                │           │
+                ▼           ▼
+        CONFORMANCE     Optional milestones
+            TESTS             │
+                              ▼
+                    Implementation plan
+                              │
+                              ▼
+                       IMPLEMENTATION
+```
+
+The roadmap helps answer:
+
+> How should we build this implementation?
+
+The specification answers:
+
+> What must the resulting implementation do?
+
+Those questions should not be confused.
+
+## The Role of AI
+
+Book-First Development does not attempt to minimize the use of AI.
+
+Instead, it changes where AI effort is concentrated.
+
+AI is especially useful for:
+
+* exploring ideas through dialogue;
+* researching unfamiliar concepts;
+* challenging assumptions;
+* identifying ambiguity and contradiction;
+* reviewing human-written explanations;
+* deriving candidate requirements from the book;
+* checking consistency between the book and specification;
+* deriving conformance tests from normative requirements;
+* proposing milestones and implementation plans;
+* generating implementation tasks;
+* writing software;
+* and verifying implementations against the published contract.
+
+The human remains responsible for the areas where understanding and judgment matter most: deciding what the system should be, understanding its concepts and tradeoffs, and approving the transitions between artifacts that encode those decisions.
+
+A useful guiding principle is:
+
+> **Human effort should concentrate where effort creates understanding or requires judgment. AI effort should concentrate where effort transforms established understanding into formal artifacts or execution.**
+
+AI may generate large portions of downstream artifacts, but those artifacts should remain downstream of ideas that a human understands and intentionally endorses.
+
+## Authority of Artifacts
+
+Book-First Development establishes a hierarchy of responsibility between its artifacts.
+
+**The book explains meaning.**
+
+**The specification defines the minimum contract.**
+
+**The conformance suite evaluates that contract.**
+
+**Plans describe how a particular implementation may be constructed.**
+
+**Implementations realize and may extend the contract.**
+
+No implementation is authoritative merely because it already exists, and no test is automatically correct merely because it passes.
+
+When artifacts disagree, the disagreement should be surfaced and resolved intentionally rather than allowing implementation behavior to silently redefine the project.
+
+The central flow is therefore:
+
+```text
+Understanding
+     │
+     ▼
+ Explanation
+     │
+     ▼
+  Contract
+     │
+     ▼
+Verification
+     │
+     ▼
+Realization
+```
+
+Or, more concretely:
+
+```text
+HUMAN
+  │
+  ▼
+BOOK       What is this, and why?
+  │
+  ▼
+SPEC       What must every implementation provide?
+  │
+  ▼
+TESTS      How can we verify that minimum contract?
+  │
+  ▼
+CODE       Make it true — and extend it where useful.
+```
+
+Book-First Development therefore treats code generation not as the beginning of software development, but as one of its later stages.
+
+Its goal is not to constrain what developers or agents are capable of building.
+
+Its goal is to ensure that the shared meaning and minimum contract of a software project remain understandable independently of any particular implementation.
