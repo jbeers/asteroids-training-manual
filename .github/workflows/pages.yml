@@ -6,6 +6,7 @@ on:
     paths:
       - "book/**"
       - "docs/**"
+      - "theme/**"
       - "bxsites.yaml"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
@@ -41,6 +42,11 @@ jobs:
         run: |
           boxlang bxSites build
           test -s site/index.html
+          if [ -d theme/assets ]; then
+            mkdir -p site/assets/theme
+            cp -R theme/assets/. site/assets/theme/
+          fi
+          test -s site/assets/theme/style.css
 
       - name: Upload site
         uses: actions/upload-pages-artifact@v3

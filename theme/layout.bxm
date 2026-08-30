@@ -3,6 +3,10 @@
 		return arguments.url.reFindNoCase( "^[a-z][a-z0-9+.-]*://" ) ? arguments.url : variables.basePath & arguments.url
 	}
 
+	function escapeUrlAttribute( required string value ) {
+		return arguments.value.replace( "&", "&amp;", "all" ).replace( '"', "&quot;", "all" ).replace( "<", "&lt;", "all" )
+	}
+
 	function renderBrand() {
 		var logo = trim( variables.siteConfig.theme.logo ?: "" )
 		var name = encodeForHTML( variables.siteConfig.name )
@@ -39,17 +43,6 @@
 		return "top-nav__link" & ( arguments.active ? " is-active" : "" )
 	}
 
-	function renderTopNav( required array nodes ) {
-		var html = ""
-		for ( var node in arguments.nodes ) {
-			var url = node.url ?: ""
-			if ( len( url ) && url != variables.page.urlPath ) {
-				html &= '<a class="top-nav__link" href="' & variables.basePath & url & '">' & encodeForHTML( node.title ) & '</a>'
-			}
-		}
-		return html
-	}
-
 	function renderExtraCss( required array urls ) {
 		var html = ""
 		for ( var url in arguments.urls ) {
@@ -70,7 +63,7 @@
 	variables.searchProviderName = lCase( trim( variables.siteConfig.searchProvider.provider ?: "local" ) )
 	var pagePath = variables.page.urlPath.reReplace( "^/+", "" )
 	variables.homeActive = pagePath == "" || pagePath == "index.html"
-	variables.documentationActive = !variables.homeActive
+	variables.repoUrl = trim( variables.siteConfig.repo.url ?: "" )
 	variables.tocPosition = variables.siteConfig.theme.options.tocPosition ?: "sticky"
 	variables.footerEnabled = ( variables.siteConfig.footer ?: false ) ? true : false
 </bx:script>
@@ -101,8 +94,9 @@
 			<a class="site-brand" href="#variables.basePath#">#renderBrand()#</a>
 			<nav class="top-nav" aria-label="Primary">
 				<a class="#topNavClass( variables.homeActive )#" href="#variables.basePath#">Home</a>
-				<a class="#topNavClass( variables.documentationActive )#" href="#variables.basePath#">Documentation</a>
-				#renderTopNav( variables.nav )#
+</bx:output><bx:if condition="#len( variables.repoUrl )#"><bx:output>
+				<a class="top-nav__link" href="#escapeUrlAttribute( variables.repoUrl )#" target="_blank" rel="noopener noreferrer">GitHub</a>
+</bx:output></bx:if><bx:output>
 			</nav>
 			<button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle color theme">◐</button>
 		</div>

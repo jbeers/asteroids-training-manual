@@ -1,6 +1,8 @@
 name: "Asteroids Training Manual"
 description: "A guide to building an Asteroids game and exploring machine learning."
 baseURL: "/"
+repo:
+  url: "https://github.com/jbeers/asteroids-training-manual"
 theme:
   name: pi
   options:
